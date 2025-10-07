@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AddRoomDialog } from "@/components/AddRoomDialog";
 
 const rooms = [
   { id: 101, type: "Standard Room", status: "available", floor: 1, capacity: 2, price: 120 },
@@ -34,7 +35,7 @@ export default function Rooms() {
           <h2 className="text-3xl font-bold text-foreground">Rooms</h2>
           <p className="text-muted-foreground">Manage your hotel rooms and their status</p>
         </div>
-        <Button className="bg-gradient-to-r from-primary to-accent">Add New Room</Button>
+        <AddRoomDialog />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

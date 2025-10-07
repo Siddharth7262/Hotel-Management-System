@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Bed } from "lucide-react";
+import { AddBookingDialog } from "@/components/AddBookingDialog";
 
 const bookings = [
   {
@@ -59,7 +60,7 @@ export default function Bookings() {
           <h2 className="text-3xl font-bold text-foreground">Bookings</h2>
           <p className="text-muted-foreground">Manage reservations and check-ins</p>
         </div>
-        <Button className="bg-gradient-to-r from-primary to-accent">New Booking</Button>
+        <AddBookingDialog />
       </div>
 
       <div className="space-y-4">

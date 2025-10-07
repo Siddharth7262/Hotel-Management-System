@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Phone } from "lucide-react";
+import { AddGuestDialog } from "@/components/AddGuestDialog";
 
 const guests = [
   {
@@ -51,7 +52,7 @@ export default function Guests() {
           <h2 className="text-3xl font-bold text-foreground">Guests</h2>
           <p className="text-muted-foreground">View and manage guest information</p>
         </div>
-        <Button className="bg-gradient-to-r from-primary to-accent">Add Guest</Button>
+        <AddGuestDialog />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
