@@ -4,9 +4,23 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Rooms from "./pages/Rooms";
+import Bookings from "./pages/Bookings";
+import Guests from "./pages/Guests";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { Sidebar } from "./components/Sidebar";
 
 const queryClient = new QueryClient();
+
+const Layout = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex min-h-screen bg-background">
+    <Sidebar />
+    <main className="flex-1 overflow-auto p-8">
+      {children}
+    </main>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -15,7 +29,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/rooms" element={<Layout><Rooms /></Layout>} />
+          <Route path="/bookings" element={<Layout><Bookings /></Layout>} />
+          <Route path="/guests" element={<Layout><Guests /></Layout>} />
+          <Route path="/settings" element={<Layout><Settings /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
