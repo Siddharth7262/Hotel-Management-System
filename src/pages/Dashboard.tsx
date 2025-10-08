@@ -2,15 +2,43 @@ import { StatCard } from "@/components/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, Bed, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-const recentBookings = [
-  { id: 1, guest: "John Smith", room: "Deluxe Suite 301", checkIn: "2025-10-08", status: "confirmed" },
-  { id: 2, guest: "Sarah Johnson", room: "Standard Room 102", checkIn: "2025-10-10", status: "confirmed" },
-  { id: 3, guest: "Michael Brown", room: "Executive Room 205", checkIn: "2025-10-12", status: "pending" },
-  { id: 4, guest: "Emily Davis", room: "Deluxe Suite 402", checkIn: "2025-10-15", status: "confirmed" },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Dashboard() {
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['recent-bookings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`
+          *,
+          guests(name),
+          rooms(room_number, type)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(4);
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: rooms = [] } = useQuery({
+    queryKey: ['rooms-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('rooms')
+        .select('status');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const availableRooms = rooms.filter(r => r.status === 'available').length;
+  const occupiedRooms = rooms.filter(r => r.status === 'occupied').length;
+  const maintenanceRooms = rooms.filter(r => r.status === 'maintenance').length;
   return (
     <div className="space-y-8">
       <div>
@@ -56,20 +84,24 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                  <div className="space-y-1">
-                    <p className="font-medium text-foreground">{booking.guest}</p>
-                    <p className="text-sm text-muted-foreground">{booking.room}</p>
+              {bookings.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">No bookings yet</p>
+              ) : (
+                bookings.map((booking: any) => (
+                  <div key={booking.id} className="flex items-center justify-between border-b pb-4 last:border-0">
+                    <div className="space-y-1">
+                      <p className="font-medium text-foreground">{booking.guests?.name}</p>
+                      <p className="text-sm text-muted-foreground">{booking.rooms?.type} {booking.rooms?.room_number}</p>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <p className="text-sm text-muted-foreground">{new Date(booking.check_in).toLocaleDateString()}</p>
+                      <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
+                        {booking.status}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="text-right space-y-1">
-                    <p className="text-sm text-muted-foreground">{booking.checkIn}</p>
-                    <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
-                      {booking.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
@@ -85,21 +117,21 @@ export default function Dashboard() {
                   <div className="h-3 w-3 rounded-full bg-success" />
                   <span className="text-sm font-medium">Available</span>
                 </div>
-                <span className="text-2xl font-bold text-foreground">28</span>
+                <span className="text-2xl font-bold text-foreground">{availableRooms}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-destructive" />
                   <span className="text-sm font-medium">Occupied</span>
                 </div>
-                <span className="text-2xl font-bold text-foreground">65</span>
+                <span className="text-2xl font-bold text-foreground">{occupiedRooms}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-warning" />
                   <span className="text-sm font-medium">Maintenance</span>
                 </div>
-                <span className="text-2xl font-bold text-foreground">7</span>
+                <span className="text-2xl font-bold text-foreground">{maintenanceRooms}</span>
               </div>
             </div>
           </CardContent>

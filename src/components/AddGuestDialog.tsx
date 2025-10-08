@@ -11,24 +11,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AddGuestDialog() {
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const guestData = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-    };
+    
+    const { error } = await supabase.from('guests').insert({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      status: 'active'
+    });
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
+    }
     
     toast({
       title: "Guest Added Successfully",
-      description: `${guestData.name} has been added to the guest list.`,
+      description: `${formData.get("name")} has been added to the guest list.`,
     });
     
+    queryClient.invalidateQueries({ queryKey: ['guests'] });
     setOpen(false);
   };
 

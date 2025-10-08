@@ -18,26 +18,43 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AddRoomDialog() {
   const [open, setOpen] = useState(false);
+  const [roomType, setRoomType] = useState("");
+  const queryClient = useQueryClient();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const roomData = {
-      roomNumber: formData.get("roomNumber"),
-      type: formData.get("type"),
-      floor: formData.get("floor"),
-      capacity: formData.get("capacity"),
-      price: formData.get("price"),
-    };
+    
+    const { error } = await supabase.from('rooms').insert({
+      room_number: formData.get("roomNumber") as string,
+      type: roomType,
+      floor: parseInt(formData.get("floor") as string),
+      capacity: parseInt(formData.get("capacity") as string),
+      price: parseFloat(formData.get("price") as string),
+      status: 'available'
+    });
+    
+    if (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+      return;
+    }
     
     toast({
       title: "Room Added Successfully",
-      description: `Room ${roomData.roomNumber} has been added to the system.`,
+      description: `Room ${formData.get("roomNumber")} has been added to the system.`,
     });
     
+    queryClient.invalidateQueries({ queryKey: ['rooms'] });
+    queryClient.invalidateQueries({ queryKey: ['rooms-stats'] });
     setOpen(false);
   };
 
@@ -60,14 +77,14 @@ export function AddRoomDialog() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="type">Room Type</Label>
-            <Select name="type" required>
+            <Select name="type" value={roomType} onValueChange={setRoomType} required>
               <SelectTrigger>
                 <SelectValue placeholder="Select room type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="standard">Standard Room</SelectItem>
-                <SelectItem value="deluxe">Deluxe Room</SelectItem>
-                <SelectItem value="executive">Executive Suite</SelectItem>
+                <SelectItem value="Standard Room">Standard Room</SelectItem>
+                <SelectItem value="Deluxe Room">Deluxe Room</SelectItem>
+                <SelectItem value="Executive Suite">Executive Suite</SelectItem>
               </SelectContent>
             </Select>
           </div>
