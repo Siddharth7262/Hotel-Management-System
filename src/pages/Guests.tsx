@@ -6,8 +6,10 @@ import { Mail, Phone } from "lucide-react";
 import { AddGuestDialog } from "@/components/AddGuestDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Guests() {
+  const navigate = useNavigate();
   const { data: guests = [] } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
@@ -64,7 +66,7 @@ export default function Guests() {
                     </div>
                   </div>
                   <div className="flex items-center justify-end pt-2 border-t">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/guests/${guest.id}`)}>
                       View Profile
                     </Button>
                   </div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AddRoomDialog } from "@/components/AddRoomDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -19,6 +20,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function Rooms() {
+  const navigate = useNavigate();
   const { data: rooms = [] } = useQuery({
     queryKey: ['rooms'],
     queryFn: async () => {
@@ -77,7 +79,7 @@ export default function Rooms() {
                   <p className="text-sm text-muted-foreground">Price per night</p>
                   <p className="text-2xl font-bold text-primary">${room.price}</p>
                 </div>
-                <Button className="w-full mt-4" variant="outline">
+                <Button className="w-full mt-4" variant="outline" onClick={() => navigate(`/rooms/${room.id}`)}>
                   View Details
                 </Button>
               </CardContent>

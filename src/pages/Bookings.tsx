@@ -5,8 +5,10 @@ import { Calendar, User, Bed } from "lucide-react";
 import { AddBookingDialog } from "@/components/AddBookingDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Bookings() {
+  const navigate = useNavigate();
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
@@ -89,7 +91,7 @@ export default function Bookings() {
                       <p className="text-sm text-muted-foreground">Total</p>
                       <p className="text-xl font-bold text-primary">${booking.total_amount || 0}</p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/bookings/${booking.id}`)}>
                       View
                     </Button>
                   </div>
