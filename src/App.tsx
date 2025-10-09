@@ -11,8 +11,11 @@ import BookingDetail from "./pages/BookingDetail";
 import Guests from "./pages/Guests";
 import GuestDetail from "./pages/GuestDetail";
 import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { Sidebar } from "./components/Sidebar";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -31,18 +34,21 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout><Index /></Layout>} />
-          <Route path="/rooms" element={<Layout><Rooms /></Layout>} />
-          <Route path="/rooms/:id" element={<Layout><RoomDetail /></Layout>} />
-          <Route path="/bookings" element={<Layout><Bookings /></Layout>} />
-          <Route path="/bookings/:id" element={<Layout><BookingDetail /></Layout>} />
-          <Route path="/guests" element={<Layout><Guests /></Layout>} />
-          <Route path="/guests/:id" element={<Layout><GuestDetail /></Layout>} />
-          <Route path="/settings" element={<Layout><Settings /></Layout>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<ProtectedRoute><Layout><Index /></Layout></ProtectedRoute>} />
+            <Route path="/rooms" element={<ProtectedRoute><Layout><Rooms /></Layout></ProtectedRoute>} />
+            <Route path="/rooms/:id" element={<ProtectedRoute><Layout><RoomDetail /></Layout></ProtectedRoute>} />
+            <Route path="/bookings" element={<ProtectedRoute><Layout><Bookings /></Layout></ProtectedRoute>} />
+            <Route path="/bookings/:id" element={<ProtectedRoute><Layout><BookingDetail /></Layout></ProtectedRoute>} />
+            <Route path="/guests" element={<ProtectedRoute><Layout><Guests /></Layout></ProtectedRoute>} />
+            <Route path="/guests/:id" element={<ProtectedRoute><Layout><GuestDetail /></Layout></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

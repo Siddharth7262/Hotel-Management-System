@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { guestSchema } from "@/lib/validations";
 
 export function AddGuestDialog() {
   const [open, setOpen] = useState(false);
@@ -22,29 +23,38 @@ export function AddGuestDialog() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    const { error } = await supabase.from('guests').insert({
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-      status: 'active'
-    });
-    
-    if (error) {
+    try {
+      // Validate input
+      const validatedData = guestSchema.parse({
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        status: 'active'
+      });
+      
+      const { error } = await supabase.from('guests').insert({
+        name: validatedData.name,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        status: validatedData.status
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Guest Added Successfully",
+        description: `${validatedData.name} has been added to the guest list.`,
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['guests'] });
+      setOpen(false);
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.errors?.[0]?.message || error.message || "Failed to add guest",
         variant: "destructive"
       });
-      return;
     }
-    
-    toast({
-      title: "Guest Added Successfully",
-      description: `${formData.get("name")} has been added to the guest list.`,
-    });
-    
-    queryClient.invalidateQueries({ queryKey: ['guests'] });
-    setOpen(false);
   };
 
   return (

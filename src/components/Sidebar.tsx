@@ -1,6 +1,8 @@
-import { Home, Bed, Calendar, Users, Settings } from "lucide-react";
+import { Home, Bed, Calendar, Users, Settings, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -12,6 +14,7 @@ const navigation = [
 
 export function Sidebar() {
   const location = useLocation();
+  const { signOut, user } = useAuth();
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-card">
@@ -40,6 +43,17 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <div className="border-t p-4 space-y-2">
+        <p className="text-xs text-muted-foreground px-3 truncate">{user?.email}</p>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          onClick={signOut}
+        >
+          <LogOut className="h-5 w-5 mr-3" />
+          Sign Out
+        </Button>
+      </div>
     </div>
   );
 }

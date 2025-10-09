@@ -20,6 +20,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { bookingSchema } from "@/lib/validations";
 
 export function AddBookingDialog() {
   const [open, setOpen] = useState(false);
@@ -47,39 +48,50 @@ export function AddBookingDialog() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    const checkIn = formData.get("checkIn") as string;
-    const checkOut = formData.get("checkOut") as string;
-    const room = rooms.find(r => r.id === selectedRoom);
-    
-    const days = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
-    const totalAmount = room ? room.price * days : 0;
-    
-    const { error } = await supabase.from('bookings').insert({
-      guest_id: selectedGuest,
-      room_id: selectedRoom,
-      check_in: checkIn,
-      check_out: checkOut,
-      status: 'confirmed',
-      total_amount: totalAmount
-    });
-    
-    if (error) {
+    try {
+      const checkIn = formData.get("checkIn") as string;
+      const checkOut = formData.get("checkOut") as string;
+      const room = rooms.find(r => r.id === selectedRoom);
+      
+      const days = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
+      const totalAmount = room ? room.price * days : 0;
+      
+      // Validate input
+      const validatedData = bookingSchema.parse({
+        guest_id: selectedGuest,
+        room_id: selectedRoom,
+        check_in: checkIn,
+        check_out: checkOut,
+        status: 'confirmed',
+        total_amount: totalAmount
+      });
+      
+      const { error } = await supabase.from('bookings').insert({
+        guest_id: validatedData.guest_id,
+        room_id: validatedData.room_id,
+        check_in: validatedData.check_in,
+        check_out: validatedData.check_out,
+        status: validatedData.status,
+        total_amount: validatedData.total_amount
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Booking Created Successfully",
+        description: `Booking has been created successfully.`,
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['recent-bookings'] });
+      setOpen(false);
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.errors?.[0]?.message || error.message || "Failed to create booking",
         variant: "destructive"
       });
-      return;
     }
-    
-    toast({
-      title: "Booking Created Successfully",
-      description: `Booking has been created successfully.`,
-    });
-    
-    queryClient.invalidateQueries({ queryKey: ['bookings'] });
-    queryClient.invalidateQueries({ queryKey: ['recent-bookings'] });
-    setOpen(false);
   };
 
   return (

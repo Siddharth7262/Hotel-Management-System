@@ -20,6 +20,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { roomSchema } from "@/lib/validations";
 
 export function AddRoomDialog() {
   const [open, setOpen] = useState(false);
@@ -30,32 +31,43 @@ export function AddRoomDialog() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
-    const { error } = await supabase.from('rooms').insert({
-      room_number: formData.get("roomNumber") as string,
-      type: roomType,
-      floor: parseInt(formData.get("floor") as string),
-      capacity: parseInt(formData.get("capacity") as string),
-      price: parseFloat(formData.get("price") as string),
-      status: 'available'
-    });
-    
-    if (error) {
+    try {
+      // Validate input
+      const validatedData = roomSchema.parse({
+        room_number: formData.get("roomNumber"),
+        type: roomType,
+        floor: formData.get("floor"),
+        capacity: formData.get("capacity"),
+        price: formData.get("price"),
+        status: 'available'
+      });
+      
+      const { error } = await supabase.from('rooms').insert({
+        room_number: validatedData.room_number,
+        type: validatedData.type,
+        floor: validatedData.floor,
+        capacity: validatedData.capacity,
+        price: validatedData.price,
+        status: validatedData.status
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Room Added Successfully",
+        description: `Room ${validatedData.room_number} has been added to the system.`,
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      queryClient.invalidateQueries({ queryKey: ['rooms-stats'] });
+      setOpen(false);
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: error.errors?.[0]?.message || error.message || "Failed to add room",
         variant: "destructive"
       });
-      return;
     }
-    
-    toast({
-      title: "Room Added Successfully",
-      description: `Room ${formData.get("roomNumber")} has been added to the system.`,
-    });
-    
-    queryClient.invalidateQueries({ queryKey: ['rooms'] });
-    queryClient.invalidateQueries({ queryKey: ['rooms-stats'] });
-    setOpen(false);
   };
 
   return (
