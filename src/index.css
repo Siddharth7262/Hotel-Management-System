@@ -45,24 +45,22 @@ All colors MUST be HSL.
     --radius: 0.75rem;
     
     --gradient-primary: linear-gradient(135deg, hsl(195 85% 35%), hsl(195 75% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(40 85% 55%), hsl(40 95% 65%));
+    --gradient-success: linear-gradient(135deg, hsl(145 65% 45%), hsl(145 70% 55%));
     --shadow-elegant: 0 4px 16px -4px hsl(195 85% 35% / 0.15);
+    --shadow-soft: 0 2px 8px -2px hsl(215 20% 50% / 0.08);
+    --shadow-hover: 0 8px 24px -8px hsl(195 85% 35% / 0.2);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 15%;
+    --sidebar-primary: 195 85% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 215 25% 15%;
+    --sidebar-border: 215 20% 92%;
+    --sidebar-ring: 195 85% 35%;
   }
 
   .dark {
@@ -101,15 +99,19 @@ All colors MUST be HSL.
     --ring: 195 75% 45%;
     
     --gradient-primary: linear-gradient(135deg, hsl(195 75% 45%), hsl(195 70% 55%));
+    --gradient-secondary: linear-gradient(135deg, hsl(40 80% 50%), hsl(40 90% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(145 60% 40%), hsl(145 65% 50%));
     --shadow-elegant: 0 4px 16px -4px hsl(195 75% 45% / 0.2);
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --shadow-soft: 0 2px 8px -2px hsl(215 20% 10% / 0.3);
+    --shadow-hover: 0 8px 24px -8px hsl(195 75% 45% / 0.3);
+    --sidebar-background: 215 22% 10%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 195 75% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 215 20% 18%;
+    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-border: 215 20% 22%;
+    --sidebar-ring: 195 75% 45%;
   }
 }
 
@@ -120,5 +122,51 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
