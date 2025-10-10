@@ -26,73 +26,115 @@ export default function Bookings() {
     }
   });
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-foreground">Bookings</h2>
-          <p className="text-muted-foreground">Manage reservations and check-ins</p>
+    <div className="space-y-8 animate-fade-in perspective-container">
+      <div className="flex items-center justify-between animate-slide-in">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient" style={{ backgroundSize: '200% auto' }}>
+            Bookings
+          </h2>
+          <p className="text-muted-foreground text-lg">Manage reservations and check-ins</p>
         </div>
-        <AddBookingDialog />
+        <div className="animate-scale-in">
+          <AddBookingDialog />
+        </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {bookings.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground">No bookings found. Create your first booking!</p>
+          <Card className="p-12 text-center animate-scale-in">
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center animate-float">
+                <Calendar className="h-10 w-10 text-primary" />
+              </div>
+              <p className="text-muted-foreground text-lg">No bookings found. Create your first booking!</p>
+            </div>
           </Card>
         ) : (
-          bookings.map((booking: any) => (
-            <Card key={booking.id} className="overflow-hidden transition-all hover:shadow-lg" style={{ boxShadow: "var(--shadow-elegant)" }}>
-              <CardHeader className="pb-3">
+          bookings.map((booking: any, index: number) => (
+            <Card 
+              key={booking.id} 
+              className="group overflow-hidden card-3d cursor-pointer"
+              style={{ 
+                boxShadow: "var(--shadow-elegant)",
+                animationDelay: `${index * 0.1}s`,
+                animationFillMode: 'both'
+              }}
+              onClick={() => navigate(`/bookings/${booking.id}`)}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+              
+              <CardHeader className="pb-4 relative">
                 <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="text-xl">Booking</CardTitle>
+                  <div className="space-y-2">
+                    <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
+                      Booking #{booking.id.slice(0, 8).toUpperCase()}
+                    </CardTitle>
                     <div className="flex items-center gap-2 text-muted-foreground">
-                      <User className="h-4 w-4" />
-                      <span className="text-sm">{booking.guests?.name}</span>
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">{booking.guests?.name}</span>
                     </div>
                   </div>
-                  <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
+                  <Badge 
+                    variant={booking.status === "confirmed" ? "default" : "secondary"}
+                    className="text-sm px-4 py-1.5 shadow-lg group-hover:scale-110 transition-transform duration-300"
+                  >
                     {booking.status}
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                      <Bed className="h-5 w-5 text-primary" />
+
+              <CardContent className="relative">
+                <div className="grid gap-6 md:grid-cols-4">
+                  <div className="flex items-start gap-3 group/item">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-md group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+                      <Bed className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Room</p>
-                      <p className="font-medium text-foreground">{booking.rooms?.type} {booking.rooms?.room_number}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Room</p>
+                      <p className="font-bold text-foreground text-lg">{booking.rooms?.type}</p>
+                      <p className="text-sm text-muted-foreground">#{booking.rooms?.room_number}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                      <Calendar className="h-5 w-5 text-success" />
+
+                  <div className="flex items-start gap-3 group/item">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-success/20 to-success/10 shadow-md group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+                      <Calendar className="h-6 w-6 text-success" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Check-in</p>
-                      <p className="font-medium text-foreground">{new Date(booking.check_in).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Check-in</p>
+                      <p className="font-bold text-foreground">{new Date(booking.check_in).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
-                      <Calendar className="h-5 w-5 text-warning" />
+
+                  <div className="flex items-start gap-3 group/item">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-warning/20 to-warning/10 shadow-md group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+                      <Calendar className="h-6 w-6 text-warning" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Check-out</p>
-                      <p className="font-medium text-foreground">{new Date(booking.check_out).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Check-out</p>
+                      <p className="font-bold text-foreground">{new Date(booking.check_out).toLocaleDateString()}</p>
                     </div>
                   </div>
+
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total</p>
-                      <p className="text-xl font-bold text-primary">${booking.total_amount || 0}</p>
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Total Amount</p>
+                      <p className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                        ${booking.total_amount || 0}
+                      </p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/bookings/${booking.id}`)}>
-                      View
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/bookings/${booking.id}`);
+                      }}
+                    >
+                      View Details
                     </Button>
                   </div>
                 </div>
