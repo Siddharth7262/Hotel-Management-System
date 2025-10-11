@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Bed } from "lucide-react";
 import { AddBookingDialog } from "@/components/AddBookingDialog";
+import { EditBookingDialog } from "@/components/EditBookingDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -125,17 +126,25 @@ export default function Bookings() {
                         ${booking.total_amount || 0}
                       </p>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/bookings/${booking.id}`);
-                      }}
-                    >
-                      View Details
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <div 
+                        onClick={(e) => e.stopPropagation()}
+                        className="animate-fade-in"
+                      >
+                        <EditBookingDialog bookingId={booking.id} />
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/bookings/${booking.id}`);
+                        }}
+                      >
+                        View Details
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
