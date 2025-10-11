@@ -321,7 +321,6 @@ All tables have RLS policies ensuring:
 3. Follow the DNS configuration instructions
 4. Your app will be available on your custom domain
 
-Note: Custom domains require a paid Lovable plan.
 
 ## 🔒 Security
 
@@ -352,8 +351,7 @@ Note: Custom domains require a paid Lovable plan.
 - **Solution**: Delete `node_modules` and run `npm install` again
 
 **Issue**: Database connection error
-- **Solution**: Check if Lovable Cloud is properly configured
-
+- **Solution**: 
 **Issue**: Authentication not working
 - **Solution**: Clear browser cache and localStorage, then try again
 
