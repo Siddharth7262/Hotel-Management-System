@@ -1,73 +1,417 @@
-# Welcome to your Lovable project
+# 🏨 HotelHub - Modern Hotel Management System
 
-## Project info
+A professional, full-featured hotel management system built with modern web technologies. HotelHub provides an intuitive interface for managing rooms, bookings, guests, and hotel operations with real-time updates and beautiful 3D animations.
 
-**URL**: https://lovable.dev/projects/97da0a8a-fbe1-4c57-b683-c3fe709c9bc8
+![HotelHub Dashboard](https://lovable.dev/opengraph-image-p98pqg.png)
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+### 📊 Dashboard
+- **Real-time Statistics**: Monitor revenue, occupancy rates, guest counts, and room availability
+- **Recent Activity**: Track latest bookings and room status updates
+- **Visual Analytics**: Interactive charts and metrics for quick insights
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
-**Use Lovable**
+### 🛏️ Room Management
+- **Room Inventory**: Comprehensive room listing with detailed information
+- **Status Tracking**: Real-time room status (Available, Occupied, Maintenance)
+- **Room Types**: Support for multiple room categories (Standard, Deluxe, Suite)
+- **Amenities Management**: Track room features and facilities
+- **Pricing Control**: Flexible pricing per room type
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/97da0a8a-fbe1-4c57-b683-c3fe709c9bc8) and start prompting.
+### 📅 Booking Management
+- **Reservation System**: Create, view, edit, and cancel bookings
+- **Status Workflow**: Track booking lifecycle (Pending, Confirmed, Checked-in, Checked-out, Cancelled)
+- **Guest Assignment**: Link bookings to guest profiles
+- **Date Management**: Check-in/check-out date tracking
+- **Payment Tracking**: Monitor booking amounts and payment status
 
-Changes made via Lovable will be committed automatically to this repo.
+### 👥 Guest Management
+- **Guest Profiles**: Maintain detailed guest information
+- **Contact Management**: Store email, phone, and address details
+- **Booking History**: View guest's past and current bookings
+- **Quick Actions**: Easy access to guest operations
 
-**Use your preferred IDE**
+### 🔐 Authentication & Security
+- **Secure Login**: Email/password authentication
+- **User Registration**: New user signup with validation
+- **Session Management**: Persistent login sessions
+- **Protected Routes**: Role-based access control
+- **Password Security**: Encrypted password storage
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎨 Modern UI/UX
+- **3D Animations**: Smooth perspective transforms and floating effects
+- **Gradient Designs**: Beautiful color schemes and glassmorphism
+- **Interactive Elements**: Hover effects, transitions, and micro-interactions
+- **Dark Mode Ready**: Optimized for light and dark themes
+- **Responsive Layout**: Mobile-first design approach
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🛠️ Technology Stack
 
-Follow these steps:
+### Frontend
+- **React 18.3.1**: Modern UI library with hooks
+- **TypeScript**: Type-safe development
+- **Vite**: Lightning-fast build tool and dev server
+- **Tailwind CSS**: Utility-first CSS framework
+- **shadcn/ui**: High-quality React components
+- **Radix UI**: Accessible component primitives
+- **React Router 6**: Client-side routing
+- **React Query**: Server state management
+- **React Hook Form**: Form handling and validation
+- **Zod**: Schema validation
+- **Lucide React**: Beautiful icon library
+- **Recharts**: Charting library for analytics
+- **Sonner**: Toast notifications
+- **date-fns**: Date manipulation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+### Backend (Lovable Cloud)
+- **Supabase**: Backend-as-a-Service
+- **PostgreSQL**: Relational database
+- **Row Level Security**: Database-level access control
+- **Real-time Subscriptions**: Live data updates
+- **Authentication**: Built-in auth system
+- **Storage**: File and image storage
+
+### Development Tools
+- **ESLint**: Code linting
+- **PostCSS**: CSS processing
+- **TypeScript**: Static type checking
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+- **Node.js** (v18 or higher) - [Download](https://nodejs.org/)
+- **npm** (v8 or higher) - Comes with Node.js
+- **Git** - [Download](https://git-scm.com/)
+
+## 🚀 Installation
+
+### 1. Clone the Repository
+
+```bash
 git clone <YOUR_GIT_URL>
+cd hotelhub
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. Install Dependencies
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 3. Environment Setup
+
+The project uses Lovable Cloud, which automatically configures the backend. The `.env` file is generated automatically with:
+
+```env
+VITE_SUPABASE_URL=<auto-generated>
+VITE_SUPABASE_PUBLISHABLE_KEY=<auto-generated>
+VITE_SUPABASE_PROJECT_ID=<auto-generated>
+```
+
+### 4. Start Development Server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Project Structure
 
-**Use GitHub Codespaces**
+```
+hotelhub/
+├── public/                    # Static assets
+│   ├── robots.txt            # SEO configuration
+│   └── favicon.ico           # Favicon
+├── src/
+│   ├── components/           # React components
+│   │   ├── ui/              # shadcn/ui components
+│   │   ├── AddBookingDialog.tsx
+│   │   ├── AddGuestDialog.tsx
+│   │   ├── AddRoomDialog.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── StatCard.tsx
+│   ├── contexts/            # React contexts
+│   │   └── AuthContext.tsx  # Authentication context
+│   ├── hooks/               # Custom React hooks
+│   │   ├── use-mobile.tsx
+│   │   └── use-toast.ts
+│   ├── integrations/        # External integrations
+│   │   └── supabase/       # Supabase client & types
+│   ├── lib/                # Utility functions
+│   │   ├── utils.ts        # Helper functions
+│   │   └── validations.ts  # Form validations
+│   ├── pages/              # Page components
+│   │   ├── Auth.tsx        # Login/Signup page
+│   │   ├── Dashboard.tsx   # Main dashboard
+│   │   ├── Bookings.tsx    # Bookings list
+│   │   ├── BookingDetail.tsx
+│   │   ├── Guests.tsx      # Guests list
+│   │   ├── GuestDetail.tsx
+│   │   ├── Rooms.tsx       # Rooms list
+│   │   ├── RoomDetail.tsx
+│   │   ├── Settings.tsx    # Settings page
+│   │   ├── Index.tsx       # Home page
+│   │   └── NotFound.tsx    # 404 page
+│   ├── App.tsx             # Main app component
+│   ├── main.tsx            # App entry point
+│   ├── index.css           # Global styles & design tokens
+│   └── vite-env.d.ts       # TypeScript definitions
+├── supabase/               # Supabase configuration
+│   ├── config.toml         # Supabase config
+│   └── migrations/         # Database migrations
+├── index.html              # HTML entry point
+├── package.json            # Dependencies
+├── tailwind.config.ts      # Tailwind configuration
+├── tsconfig.json           # TypeScript configuration
+└── vite.config.ts          # Vite configuration
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎯 Usage Guide
 
-## What technologies are used for this project?
+### First Time Setup
 
-This project is built with:
+1. **Create an Account**
+   - Navigate to the login page
+   - Click "Sign Up"
+   - Enter your email and password
+   - You'll be automatically logged in
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. **Add Rooms**
+   - Go to "Rooms" section
+   - Click "Add Room"
+   - Fill in room details (number, type, price, amenities)
+   - Click "Add Room" to save
 
-## How can I deploy this project?
+3. **Add Guests**
+   - Navigate to "Guests" section
+   - Click "Add Guest"
+   - Enter guest information
+   - Save the guest profile
 
-Simply open [Lovable](https://lovable.dev/projects/97da0a8a-fbe1-4c57-b683-c3fe709c9bc8) and click on Share -> Publish.
+4. **Create Bookings**
+   - Go to "Bookings" section
+   - Click "Add Booking"
+   - Select guest and room
+   - Set check-in/check-out dates
+   - Enter total amount
+   - Submit the booking
 
-## Can I connect a custom domain to my Lovable project?
+### Managing the System
 
-Yes, you can!
+- **Dashboard**: View overall statistics and recent activity
+- **Bookings**: Track all reservations and their statuses
+- **Guests**: Manage guest information and history
+- **Rooms**: Monitor room inventory and availability
+- **Settings**: Configure hotel name and system preferences
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎨 Design System
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Color Scheme
+The project uses a semantic color system defined in `src/index.css`:
+
+- **Primary**: Main brand color with variants
+- **Secondary**: Supporting colors
+- **Accent**: Highlight colors
+- **Destructive**: Error states
+- **Muted**: Subtle backgrounds
+- **Card**: Component backgrounds
+
+### Animations
+Built-in animations for enhanced UX:
+
+- **fade-in**: Smooth element entry
+- **scale-in**: Growth animations
+- **slide-in**: Directional animations
+- **float**: Continuous floating motion
+- **gradient-shift**: Animated gradients
+- **hover-scale**: Interactive hover effects
+
+### Components
+All UI components follow shadcn/ui patterns:
+
+- Fully accessible (ARIA compliant)
+- Keyboard navigable
+- Screen reader friendly
+- Customizable via CSS variables
+- Dark mode compatible
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run linter
+npm run lint
+```
+
+### Code Style
+
+- Use TypeScript for type safety
+- Follow React best practices and hooks guidelines
+- Use functional components with hooks
+- Implement proper error handling
+- Write reusable components
+- Use semantic HTML elements
+- Follow accessibility guidelines (WCAG 2.1)
+
+### Adding New Features
+
+1. Create necessary database tables/migrations
+2. Update TypeScript types
+3. Build React components
+4. Implement business logic
+5. Add proper error handling
+6. Test functionality
+7. Update documentation
+
+## 🗄️ Database Schema
+
+### Tables
+
+#### `rooms`
+- `id`: UUID (Primary Key)
+- `room_number`: Text (Unique)
+- `room_type`: Text (Standard, Deluxe, Suite)
+- `status`: Text (Available, Occupied, Maintenance)
+- `price_per_night`: Numeric
+- `amenities`: Text Array
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+#### `guests`
+- `id`: UUID (Primary Key)
+- `full_name`: Text
+- `email`: Text (Unique)
+- `phone`: Text
+- `address`: Text
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+#### `bookings`
+- `id`: UUID (Primary Key)
+- `guest_id`: UUID (Foreign Key → guests)
+- `room_id`: UUID (Foreign Key → rooms)
+- `check_in`: Date
+- `check_out`: Date
+- `status`: Text (Pending, Confirmed, Checked-in, Checked-out, Cancelled)
+- `total_amount`: Numeric
+- `created_at`: Timestamp
+- `updated_at`: Timestamp
+
+### Row Level Security (RLS)
+All tables have RLS policies ensuring:
+- Users can only access their own data
+- Authentication required for all operations
+- Proper authorization checks
+
+## 🚢 Deployment
+
+### Deploy to Lovable
+
+1. Open your project in [Lovable](https://lovable.dev)
+2. Click **Publish** in the top right
+3. Your app is now live!
+
+### Custom Domain
+
+1. Navigate to **Project > Settings > Domains**
+2. Click **Connect Domain**
+3. Follow the DNS configuration instructions
+4. Your app will be available on your custom domain
+
+Note: Custom domains require a paid Lovable plan.
+
+## 🔒 Security
+
+### Authentication
+- Secure email/password authentication
+- Session management with auto-refresh
+- Protected routes requiring authentication
+- Automatic session persistence
+
+### Database Security
+- Row Level Security (RLS) enabled on all tables
+- User-scoped data access
+- SQL injection prevention
+- Input validation and sanitization
+
+### Best Practices
+- Environment variables for sensitive data
+- HTTPS enforcement in production
+- Secure password hashing
+- CORS protection
+- XSS prevention
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Issue**: App won't start
+- **Solution**: Delete `node_modules` and run `npm install` again
+
+**Issue**: Database connection error
+- **Solution**: Check if Lovable Cloud is properly configured
+
+**Issue**: Authentication not working
+- **Solution**: Clear browser cache and localStorage, then try again
+
+**Issue**: Styles not loading
+- **Solution**: Run `npm run build` to rebuild the project
+
+**Issue**: TypeScript errors
+- **Solution**: Run `npm run type-check` to identify type issues
+
+## 📚 Resources
+
+- [Lovable Documentation](https://docs.lovable.dev/)
+- [React Documentation](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Supabase Docs](https://supabase.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is private and proprietary. All rights reserved.
+
+## 👥 Support
+
+For support and questions:
+- Visit [Lovable Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
+- Check [Lovable Documentation](https://docs.lovable.dev/)
+- Contact the development team
+
+## 🎉 Acknowledgments
+
+- Built with [Lovable](https://lovable.dev/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons by [Lucide](https://lucide.dev/)
+- Backend powered by [Supabase](https://supabase.com/)
+
+---
+
+**Made with ❤️ using Lovable**
+
+**Project URL**: https://lovable.dev/projects/97da0a8a-fbe1-4c57-b683-c3fe709c9bc8
