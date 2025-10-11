@@ -390,8 +390,7 @@ This project is private and proprietary. All rights reserved.
 ## 👥 Support
 
 For support and questions:
-- Visit [Lovable Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
-- Contact the development team
+- Contact at 9264161795
 
 ## 🎉 Acknowledgments
 
@@ -403,4 +402,4 @@ For support and questions:
 
 **Made with ❤️ using Lovable**
 
-**Project URL**: https://lovable.dev/projects/97da0a8a-fbe1-4c57-b683-c3fe709c9bc8
+**Project URL**: Comming Soon
