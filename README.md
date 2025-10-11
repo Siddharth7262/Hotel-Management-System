@@ -2,7 +2,6 @@
 
 A professional, full-featured hotel management system built with modern web technologies. HotelHub provides an intuitive interface for managing rooms, bookings, guests, and hotel operations with real-time updates and beautiful 3D animations.
 
-![HotelHub Dashboard](https://lovable.dev/opengraph-image-p98pqg.png)
 
 ## ✨ Features
 
@@ -316,13 +315,6 @@ All tables have RLS policies ensuring:
 - Authentication required for all operations
 - Proper authorization checks
 
-## 🚢 Deployment
-
-### Deploy to Lovable
-
-1. Open your project in [Lovable](https://lovable.dev)
-2. Click **Publish** in the top right
-3. Your app is now live!
 
 ### Custom Domain
 
@@ -375,7 +367,6 @@ Note: Custom domains require a paid Lovable plan.
 
 ## 📚 Resources
 
-- [Lovable Documentation](https://docs.lovable.dev/)
 - [React Documentation](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
@@ -400,12 +391,10 @@ This project is private and proprietary. All rights reserved.
 
 For support and questions:
 - Visit [Lovable Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
-- Check [Lovable Documentation](https://docs.lovable.dev/)
 - Contact the development team
 
 ## 🎉 Acknowledgments
 
-- Built with [Lovable](https://lovable.dev/)
 - UI components from [shadcn/ui](https://ui.shadcn.com/)
 - Icons by [Lucide](https://lucide.dev/)
 - Backend powered by [Supabase](https://supabase.com/)
