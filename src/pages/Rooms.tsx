@@ -2,9 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AddRoomDialog } from "@/components/AddRoomDialog";
+import { FilterBar } from "@/components/FilterBar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -21,6 +23,15 @@ const getStatusColor = (status: string) => {
 
 export default function Rooms() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    status: "all",
+    type: "all",
+  });
+
   const { data: rooms = [] } = useQuery({
     queryKey: ['rooms'],
     queryFn: async () => {
@@ -34,23 +45,104 @@ export default function Rooms() {
     }
   });
 
+  const filteredRooms = useMemo(() => {
+    return rooms.filter((room: any) => {
+      // Search filter
+      if (appliedFilters.search) {
+        const searchLower = appliedFilters.search.toLowerCase();
+        const matchesSearch =
+          room.room_number?.toLowerCase().includes(searchLower) ||
+          room.type?.toLowerCase().includes(searchLower) ||
+          room.floor?.toString().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // Status filter
+      if (appliedFilters.status !== "all" && room.status !== appliedFilters.status) {
+        return false;
+      }
+
+      // Type filter
+      if (appliedFilters.type !== "all" && room.type !== appliedFilters.type) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [rooms, appliedFilters]);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({
+      search: searchQuery,
+      status: statusFilter,
+      type: typeFilter,
+    });
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setTypeFilter("all");
+    setAppliedFilters({
+      search: "",
+      status: "all",
+      type: "all",
+    });
+  };
+
+  const uniqueRoomTypes = Array.from(new Set(rooms.map((r: any) => r.type).filter(Boolean)));
+
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-foreground">Rooms</h2>
-          <p className="text-muted-foreground">Manage your hotel rooms and their status</p>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex items-center justify-between animate-slide-in">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient" style={{ backgroundSize: '200% auto' }}>
+            Rooms
+          </h2>
+          <p className="text-muted-foreground text-lg">Manage your hotel rooms and their status</p>
         </div>
-        <AddRoomDialog />
+        <div className="animate-scale-in">
+          <AddRoomDialog />
+        </div>
       </div>
 
+      <FilterBar
+        searchPlaceholder="Search by room number, type, or floor..."
+        onSearchChange={setSearchQuery}
+        filters={[
+          {
+            name: "status",
+            label: "Status",
+            options: [
+              { label: "Available", value: "available" },
+              { label: "Occupied", value: "occupied" },
+              { label: "Maintenance", value: "maintenance" },
+            ],
+            value: statusFilter,
+            onChange: setStatusFilter,
+          },
+          {
+            name: "type",
+            label: "Type",
+            options: uniqueRoomTypes.map((type) => ({
+              label: type,
+              value: type,
+            })),
+            value: typeFilter,
+            onChange: setTypeFilter,
+          },
+        ]}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {rooms.length === 0 ? (
+        {filteredRooms.length === 0 ? (
           <div className="col-span-full text-center py-8">
             <p className="text-muted-foreground">No rooms found. Add your first room!</p>
           </div>
         ) : (
-          rooms.map((room: any) => (
+          filteredRooms.map((room: any) => (
             <Card key={room.id} className="overflow-hidden transition-all hover:shadow-lg" style={{ boxShadow: "var(--shadow-elegant)" }}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
