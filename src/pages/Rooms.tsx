@@ -26,10 +26,12 @@ export default function Rooms() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [appliedFilters, setAppliedFilters] = useState({
     search: "",
     status: "all",
     type: "all",
+    priceRange: [0, 1000] as [number, number],
   });
 
   const { data: rooms = [] } = useQuery({
@@ -67,15 +69,24 @@ export default function Rooms() {
         return false;
       }
 
+      // Price filter
+      const roomPrice = parseFloat(room.price) || 0;
+      if (roomPrice < appliedFilters.priceRange[0] || roomPrice > appliedFilters.priceRange[1]) {
+        return false;
+      }
+
       return true;
     });
   }, [rooms, appliedFilters]);
+
+  const maxRoomPrice = Math.max(...rooms.map((r: any) => parseFloat(r.price) || 0), 1000);
 
   const handleApplyFilters = () => {
     setAppliedFilters({
       search: searchQuery,
       status: statusFilter,
       type: typeFilter,
+      priceRange: priceRange,
     });
   };
 
@@ -83,10 +94,12 @@ export default function Rooms() {
     setSearchQuery("");
     setStatusFilter("all");
     setTypeFilter("all");
+    setPriceRange([0, maxRoomPrice]);
     setAppliedFilters({
       search: "",
       status: "all",
       type: "all",
+      priceRange: [0, maxRoomPrice],
     });
   };
 
@@ -132,6 +145,11 @@ export default function Rooms() {
             onChange: setTypeFilter,
           },
         ]}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        showPriceFilter={true}
+        minPrice={0}
+        maxPrice={maxRoomPrice}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}
       />

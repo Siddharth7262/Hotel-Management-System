@@ -17,11 +17,13 @@ export default function Bookings() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roomTypeFilter, setRoomTypeFilter] = useState("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [appliedFilters, setAppliedFilters] = useState({
     search: "",
     status: "all",
     roomType: "all",
     dateRange: undefined as DateRange | undefined,
+    priceRange: [0, 5000] as [number, number],
   });
 
   const { data: bookings = [] } = useQuery({
@@ -78,9 +80,17 @@ export default function Bookings() {
         if (!isInRange) return false;
       }
 
+      // Price filter
+      const bookingAmount = parseFloat(booking.total_amount) || 0;
+      if (bookingAmount < appliedFilters.priceRange[0] || bookingAmount > appliedFilters.priceRange[1]) {
+        return false;
+      }
+
       return true;
     });
   }, [bookings, appliedFilters]);
+
+  const maxBookingAmount = Math.max(...bookings.map((b: any) => parseFloat(b.total_amount) || 0), 5000);
 
   const handleApplyFilters = () => {
     setAppliedFilters({
@@ -88,6 +98,7 @@ export default function Bookings() {
       status: statusFilter,
       roomType: roomTypeFilter,
       dateRange: dateRange,
+      priceRange: priceRange,
     });
   };
 
@@ -96,11 +107,13 @@ export default function Bookings() {
     setStatusFilter("all");
     setRoomTypeFilter("all");
     setDateRange(undefined);
+    setPriceRange([0, maxBookingAmount]);
     setAppliedFilters({
       search: "",
       status: "all",
       roomType: "all",
       dateRange: undefined,
+      priceRange: [0, maxBookingAmount],
     });
   };
 
@@ -152,6 +165,11 @@ export default function Bookings() {
         dateRange={dateRange}
         onDateRangeChange={setDateRange}
         showDateFilter={true}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        showPriceFilter={true}
+        minPrice={0}
+        maxPrice={maxBookingAmount}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}
       />
