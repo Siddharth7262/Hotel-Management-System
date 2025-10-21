@@ -1,4 +1,4 @@
-import { Home, Bed, Calendar, Users, Settings, LogOut } from "lucide-react";
+import { Home, Bed, Calendar, Users, Settings, LogOut, BarChart3, CalendarDays } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,6 +9,8 @@ const navigation = [
   { name: "Rooms", href: "/rooms", icon: Bed },
   { name: "Bookings", href: "/bookings", icon: Calendar },
   { name: "Guests", href: "/guests", icon: Users },
+  { name: "Calendar", href: "/calendar", icon: CalendarDays },
+  { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
