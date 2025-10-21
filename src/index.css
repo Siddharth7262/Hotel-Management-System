@@ -264,7 +264,6 @@ All colors MUST be HSL.
     }
   }
 
-<<<<<<< HEAD
   @keyframes pulseSlow {
     0%, 100% {
       opacity: 1;
@@ -280,14 +279,6 @@ All colors MUST be HSL.
     }
     50% {
       transform: translateY(-5px);
-=======
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
->>>>>>> 2e7e48cff2357045d7214743a12f692a84ebcc2d
     }
   }
 }
