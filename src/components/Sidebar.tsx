@@ -17,13 +17,24 @@ export function Sidebar() {
   const { signOut, user } = useAuth();
 
   return (
-    <div className="flex h-screen w-64 flex-col border-r border-sidebar-border bg-sidebar shadow-lg">
-      <div className="flex h-16 items-center border-b border-sidebar-border px-6 bg-gradient-to-r from-primary/5 to-accent/5">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-tight">
-          HotelHub
-        </h1>
+    <div className="relative flex h-screen w-64 flex-col border-r border-sidebar-border/50 bg-sidebar shadow-2xl">
+      {/* Decorative background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-accent/10 to-transparent rounded-full blur-3xl" />
+      
+      {/* Header */}
+      <div className="relative flex h-20 items-center justify-center border-b border-sidebar-border/50 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent blur-xl opacity-30 animate-pulse-slow" />
+          <h1 className="relative text-3xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent tracking-tight animate-gradient" style={{ backgroundSize: '200% auto' }}>
+            HotelHub
+          </h1>
+        </div>
       </div>
-      <nav className="flex-1 space-y-2 p-4">
+      
+      {/* Navigation */}
+      <nav className="relative flex-1 space-y-2 p-4">
         {navigation.map((item, index) => {
           const isActive = location.pathname === item.href;
           return (
@@ -31,33 +42,64 @@ export function Sidebar() {
               key={item.name}
               to={item.href}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 animate-slide-in",
+                "group relative flex items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold transition-all duration-300 animate-slide-in overflow-hidden",
                 isActive
-                  ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg scale-[1.02]"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:scale-[1.02]"
+                  ? "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-xl scale-[1.03]"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground hover:scale-[1.02] hover:shadow-lg"
               )}
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <item.icon className={cn(
-                "h-5 w-5 transition-transform duration-200",
-                isActive ? "" : "group-hover:scale-110"
-              )} />
-              {item.name}
+              {/* Hover effect line */}
+              {!isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-r-full" />
+              )}
+              
+              {/* Icon with glow effect */}
+              <div className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300",
+                isActive 
+                  ? "bg-white/20 shadow-lg" 
+                  : "bg-sidebar-accent/30 group-hover:bg-primary/20 group-hover:scale-110"
+              )}>
+                <item.icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+              </div>
+              
+              <span className="flex-1">{item.name}</span>
+              
+              {/* Active indicator */}
+              {isActive && (
+                <div className="h-2 w-2 rounded-full bg-white shadow-lg animate-pulse-slow" />
+              )}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-sidebar-border p-4 space-y-3 bg-gradient-to-t from-sidebar-accent/30 to-transparent">
-        <div className="px-3 py-2 rounded-lg bg-sidebar-accent/50">
-          <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.email}</p>
+      
+      {/* User section */}
+      <div className="relative border-t border-sidebar-border/50 p-4 space-y-3 bg-gradient-to-t from-sidebar-accent/50 to-transparent">
+        <div className="relative px-4 py-3 rounded-2xl bg-gradient-to-r from-sidebar-accent/70 to-sidebar-accent/50 border border-sidebar-border/30 overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold shadow-lg">
+              {user?.email?.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-sidebar-foreground/70 uppercase tracking-wider">Account</p>
+              <p className="text-sm font-semibold text-sidebar-foreground truncate">{user?.email}</p>
+            </div>
+          </div>
         </div>
+        
         <Button 
           variant="ghost" 
-          className="w-full justify-start text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-destructive/10 hover:scale-[1.02] transition-all duration-200"
+          className="relative w-full justify-start text-sidebar-foreground hover:text-destructive font-bold rounded-2xl px-5 py-4 h-auto hover:bg-destructive/10 hover:scale-[1.02] transition-all duration-300 group overflow-hidden"
           onClick={signOut}
         >
-          <LogOut className="h-5 w-5 mr-3" />
-          Sign Out
+          <div className="absolute inset-0 bg-gradient-to-r from-destructive/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-center h-10 w-10 rounded-xl bg-destructive/10 group-hover:bg-destructive/20 transition-colors duration-300 mr-3">
+            <LogOut className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+          </div>
+          <span className="relative">Sign Out</span>
         </Button>
       </div>
     </div>
