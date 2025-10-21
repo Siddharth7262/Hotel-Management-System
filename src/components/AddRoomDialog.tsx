@@ -73,24 +73,34 @@ export function AddRoomDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-primary to-accent">Add New Room</Button>
+        <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          Add New Room
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] animate-scale-in">
         <DialogHeader>
-          <DialogTitle>Add New Room</DialogTitle>
-          <DialogDescription>
-            Enter the details for the new room. Click save when you're done.
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Add New Room
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            Enter the details for the new room. All fields are required.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="roomNumber">Room Number</Label>
-            <Input id="roomNumber" name="roomNumber" placeholder="101" required />
+        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+          <div className="space-y-2 input-group">
+            <Label htmlFor="roomNumber" className="text-sm font-semibold">Room Number</Label>
+            <Input 
+              id="roomNumber" 
+              name="roomNumber" 
+              placeholder="101" 
+              required 
+              className="h-11 transition-all duration-300 focus:scale-[1.02]"
+            />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Room Type</Label>
+          <div className="space-y-2 input-group">
+            <Label htmlFor="type" className="text-sm font-semibold">Room Type</Label>
             <Select name="type" value={roomType} onValueChange={setRoomType} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 transition-all duration-300 focus:scale-[1.02]">
                 <SelectValue placeholder="Select room type" />
               </SelectTrigger>
               <SelectContent>
@@ -101,20 +111,44 @@ export function AddRoomDialog() {
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="floor">Floor</Label>
-              <Input id="floor" name="floor" type="number" placeholder="1" required />
+            <div className="space-y-2 input-group">
+              <Label htmlFor="floor" className="text-sm font-semibold">Floor</Label>
+              <Input 
+                id="floor" 
+                name="floor" 
+                type="number" 
+                placeholder="1" 
+                required 
+                className="h-11 transition-all duration-300 focus:scale-[1.02]"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="capacity">Capacity</Label>
-              <Input id="capacity" name="capacity" type="number" placeholder="2" required />
+            <div className="space-y-2 input-group">
+              <Label htmlFor="capacity" className="text-sm font-semibold">Capacity</Label>
+              <Input 
+                id="capacity" 
+                name="capacity" 
+                type="number" 
+                placeholder="2" 
+                required 
+                className="h-11 transition-all duration-300 focus:scale-[1.02]"
+              />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="price">Price per Night ($)</Label>
-            <Input id="price" name="price" type="number" placeholder="120" required />
+          <div className="space-y-2 input-group">
+            <Label htmlFor="price" className="text-sm font-semibold">Price per Night ($)</Label>
+            <Input 
+              id="price" 
+              name="price" 
+              type="number" 
+              placeholder="120" 
+              required 
+              className="h-11 transition-all duration-300 focus:scale-[1.02]"
+            />
           </div>
-          <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent">
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] text-base font-semibold"
+          >
             Add Room
           </Button>
         </form>

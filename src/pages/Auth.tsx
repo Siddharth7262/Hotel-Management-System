@@ -104,28 +104,41 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/10 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Hotel className="h-10 w-10 text-primary" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-accent/10 p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      </div>
+
+      <Card className="w-full max-w-md relative perspective-container animate-scale-in" style={{ boxShadow: 'var(--shadow-elegant)' }}>
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="flex justify-center mb-2">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300 animate-pulse-slow" />
+              <div className="relative p-4 rounded-full bg-gradient-to-br from-primary via-accent to-primary shadow-lg animate-gradient" style={{ backgroundSize: '200% 200%' }}>
+                <Hotel className="h-12 w-12 text-primary-foreground" />
+              </div>
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Hotel Management System</CardTitle>
-          <CardDescription>Secure access to your hotel dashboard</CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient" style={{ backgroundSize: '200% auto' }}>
+              HotelHub
+            </CardTitle>
+            <CardDescription className="text-base">Secure access to your hotel dashboard</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 p-1 bg-muted/50">
+              <TabsTrigger value="signin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground transition-all duration-300">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground transition-all duration-300">Sign Up</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+            <TabsContent value="signin" className="mt-6">
+              <form onSubmit={handleSignIn} className="space-y-5">
+                <div className="space-y-2 input-group">
+                  <Label htmlFor="signin-email" className="text-sm font-semibold">Email</Label>
                   <Input
                     id="signin-email"
                     type="email"
@@ -134,10 +147,11 @@ export default function Auth() {
                     onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                     required
                     disabled={loading}
+                    className="h-11 transition-all duration-300 focus:scale-[1.02]"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
+                <div className="space-y-2 input-group">
+                  <Label htmlFor="signin-password" className="text-sm font-semibold">Password</Label>
                   <Input
                     id="signin-password"
                     type="password"
@@ -145,18 +159,27 @@ export default function Auth() {
                     onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                     required
                     disabled={loading}
+                    className="h-11 transition-all duration-300 focus:scale-[1.02]"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Signing in..." : "Sign In"}
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] text-base font-semibold" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin">⏳</span> Signing in...
+                    </span>
+                  ) : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
 
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
+            <TabsContent value="signup" className="mt-6">
+              <form onSubmit={handleSignUp} className="space-y-5">
+                <div className="space-y-2 input-group">
+                  <Label htmlFor="signup-name" className="text-sm font-semibold">Full Name</Label>
                   <Input
                     id="signup-name"
                     type="text"
@@ -165,10 +188,11 @@ export default function Auth() {
                     onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                     required
                     disabled={loading}
+                    className="h-11 transition-all duration-300 focus:scale-[1.02]"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                <div className="space-y-2 input-group">
+                  <Label htmlFor="signup-email" className="text-sm font-semibold">Email</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -177,10 +201,11 @@ export default function Auth() {
                     onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                     required
                     disabled={loading}
+                    className="h-11 transition-all duration-300 focus:scale-[1.02]"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                <div className="space-y-2 input-group">
+                  <Label htmlFor="signup-password" className="text-sm font-semibold">Password</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -188,13 +213,22 @@ export default function Auth() {
                     onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                     required
                     disabled={loading}
+                    className="h-11 transition-all duration-300 focus:scale-[1.02]"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground pt-1">
                     Must be 8+ characters with uppercase, lowercase, and numbers
                   </p>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating account..." : "Create Account"}
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] text-base font-semibold" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="animate-spin">⏳</span> Creating account...
+                    </span>
+                  ) : "Create Account"}
                 </Button>
               </form>
             </TabsContent>

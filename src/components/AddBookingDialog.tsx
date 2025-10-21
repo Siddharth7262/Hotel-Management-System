@@ -97,20 +97,24 @@ export function AddBookingDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-primary to-accent">New Booking</Button>
+        <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          New Booking
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] animate-scale-in">
         <DialogHeader>
-          <DialogTitle>Create New Booking</DialogTitle>
-          <DialogDescription>
-            Enter the booking details. Click save when you're done.
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Create New Booking
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            Select guest and room, then choose dates. All fields are required.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="guest">Guest</Label>
+        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+          <div className="space-y-2 input-group">
+            <Label htmlFor="guest" className="text-sm font-semibold">Guest</Label>
             <Select name="guest" value={selectedGuest} onValueChange={setSelectedGuest} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 transition-all duration-300 focus:scale-[1.02]">
                 <SelectValue placeholder="Select a guest" />
               </SelectTrigger>
               <SelectContent>
@@ -122,10 +126,10 @@ export function AddBookingDialog() {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="room">Room</Label>
+          <div className="space-y-2 input-group">
+            <Label htmlFor="room" className="text-sm font-semibold">Room</Label>
             <Select name="room" value={selectedRoom} onValueChange={setSelectedRoom} required>
-              <SelectTrigger>
+              <SelectTrigger className="h-11 transition-all duration-300 focus:scale-[1.02]">
                 <SelectValue placeholder="Select a room" />
               </SelectTrigger>
               <SelectContent>
@@ -138,16 +142,31 @@ export function AddBookingDialog() {
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="checkIn">Check-in Date</Label>
-              <Input id="checkIn" name="checkIn" type="date" required />
+            <div className="space-y-2 input-group">
+              <Label htmlFor="checkIn" className="text-sm font-semibold">Check-in Date</Label>
+              <Input 
+                id="checkIn" 
+                name="checkIn" 
+                type="date" 
+                required 
+                className="h-11 transition-all duration-300 focus:scale-[1.02]"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkOut">Check-out Date</Label>
-              <Input id="checkOut" name="checkOut" type="date" required />
+            <div className="space-y-2 input-group">
+              <Label htmlFor="checkOut" className="text-sm font-semibold">Check-out Date</Label>
+              <Input 
+                id="checkOut" 
+                name="checkOut" 
+                type="date" 
+                required 
+                className="h-11 transition-all duration-300 focus:scale-[1.02]"
+              />
             </div>
           </div>
-          <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent">
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] text-base font-semibold"
+          >
             Create Booking
           </Button>
         </form>

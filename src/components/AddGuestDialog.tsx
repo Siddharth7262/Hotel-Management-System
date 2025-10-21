@@ -60,29 +60,56 @@ export function AddGuestDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-primary to-accent">Add Guest</Button>
+        <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+          Add Guest
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] animate-scale-in">
         <DialogHeader>
-          <DialogTitle>Add New Guest</DialogTitle>
-          <DialogDescription>
-            Enter the guest details. Click save when you're done.
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Add New Guest
+          </DialogTitle>
+          <DialogDescription className="text-base">
+            Enter the guest details. All fields are required.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" placeholder="John Smith" required />
+        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+          <div className="space-y-2 input-group">
+            <Label htmlFor="name" className="text-sm font-semibold">Full Name</Label>
+            <Input 
+              id="name" 
+              name="name" 
+              placeholder="John Smith" 
+              required 
+              className="h-11 transition-all duration-300 focus:scale-[1.02]"
+            />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="john@email.com" required />
+          <div className="space-y-2 input-group">
+            <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
+            <Input 
+              id="email" 
+              name="email" 
+              type="email" 
+              placeholder="john@email.com" 
+              required 
+              className="h-11 transition-all duration-300 focus:scale-[1.02]"
+            />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" name="phone" type="tel" placeholder="+1 (555) 123-4567" required />
+          <div className="space-y-2 input-group">
+            <Label htmlFor="phone" className="text-sm font-semibold">Phone Number</Label>
+            <Input 
+              id="phone" 
+              name="phone" 
+              type="tel" 
+              placeholder="+1 (555) 123-4567" 
+              required 
+              className="h-11 transition-all duration-300 focus:scale-[1.02]"
+            />
           </div>
-          <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent">
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] text-base font-semibold"
+          >
             Add Guest
           </Button>
         </form>
