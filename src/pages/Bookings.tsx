@@ -3,12 +3,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Bed } from "lucide-react";
 import { AddBookingDialog } from "@/components/AddBookingDialog";
+import { EditBookingDialog } from "@/components/EditBookingDialog";
+import { FilterBar } from "@/components/FilterBar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { DateRange } from "react-day-picker";
 
 export default function Bookings() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [roomTypeFilter, setRoomTypeFilter] = useState("all");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    status: "all",
+    roomType: "all",
+    dateRange: undefined as DateRange | undefined,
+    priceRange: [0, 5000] as [number, number],
+  });
+
   const { data: bookings = [] } = useQuery({
     queryKey: ['bookings'],
     queryFn: async () => {
@@ -16,7 +33,7 @@ export default function Bookings() {
         .from('bookings')
         .select(`
           *,
-          guests(name),
+          guests(name, email, phone),
           rooms(room_number, type)
         `)
         .order('created_at', { ascending: false });
@@ -25,6 +42,85 @@ export default function Bookings() {
       return data;
     }
   });
+
+  const filteredBookings = useMemo(() => {
+    return bookings.filter((booking: any) => {
+      // Search filter
+      if (appliedFilters.search) {
+        const searchLower = appliedFilters.search.toLowerCase();
+        const matchesSearch =
+          booking.guests?.name?.toLowerCase().includes(searchLower) ||
+          booking.rooms?.room_number?.toLowerCase().includes(searchLower) ||
+          booking.id.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // Status filter
+      if (appliedFilters.status !== "all" && booking.status !== appliedFilters.status) {
+        return false;
+      }
+
+      // Room type filter
+      if (appliedFilters.roomType !== "all" && booking.rooms?.type !== appliedFilters.roomType) {
+        return false;
+      }
+
+      // Date range filter
+      if (appliedFilters.dateRange?.from) {
+        const checkIn = new Date(booking.check_in);
+        const checkOut = new Date(booking.check_out);
+        const rangeFrom = appliedFilters.dateRange.from;
+        const rangeTo = appliedFilters.dateRange.to || appliedFilters.dateRange.from;
+
+        const isInRange =
+          (checkIn >= rangeFrom && checkIn <= rangeTo) ||
+          (checkOut >= rangeFrom && checkOut <= rangeTo) ||
+          (checkIn <= rangeFrom && checkOut >= rangeTo);
+
+        if (!isInRange) return false;
+      }
+
+      // Price filter
+      const bookingAmount = parseFloat(booking.total_amount) || 0;
+      if (bookingAmount < appliedFilters.priceRange[0] || bookingAmount > appliedFilters.priceRange[1]) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [bookings, appliedFilters]);
+
+  const maxBookingAmount = Math.max(...bookings.map((b: any) => parseFloat(b.total_amount) || 0), 5000);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({
+      search: searchQuery,
+      status: statusFilter,
+      roomType: roomTypeFilter,
+      dateRange: dateRange,
+      priceRange: priceRange,
+    });
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setRoomTypeFilter("all");
+    setDateRange(undefined);
+    setPriceRange([0, maxBookingAmount]);
+    setAppliedFilters({
+      search: "",
+      status: "all",
+      roomType: "all",
+      dateRange: undefined,
+      priceRange: [0, maxBookingAmount],
+    });
+  };
+
+  const uniqueRoomTypes = Array.from(
+    new Set(bookings.map((b: any) => b.rooms?.type).filter(Boolean))
+  );
+
   return (
     <div className="space-y-8 animate-fade-in perspective-container">
       <div className="flex items-center justify-between animate-slide-in">
@@ -39,8 +135,47 @@ export default function Bookings() {
         </div>
       </div>
 
+      <FilterBar
+        searchPlaceholder="Search by guest name, room number, or booking ID..."
+        onSearchChange={setSearchQuery}
+        filters={[
+          {
+            name: "status",
+            label: "Status",
+            options: [
+              { label: "Confirmed", value: "confirmed" },
+              { label: "Checked In", value: "checked-in" },
+              { label: "Checked Out", value: "checked-out" },
+              { label: "Cancelled", value: "cancelled" },
+            ],
+            value: statusFilter,
+            onChange: setStatusFilter,
+          },
+          {
+            name: "roomType",
+            label: "Room Type",
+            options: uniqueRoomTypes.map((type) => ({
+              label: type,
+              value: type,
+            })),
+            value: roomTypeFilter,
+            onChange: setRoomTypeFilter,
+          },
+        ]}
+        dateRange={dateRange}
+        onDateRangeChange={setDateRange}
+        showDateFilter={true}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        showPriceFilter={true}
+        minPrice={0}
+        maxPrice={maxBookingAmount}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
       <div className="space-y-6">
-        {bookings.length === 0 ? (
+        {filteredBookings.length === 0 ? (
           <Card className="p-12 text-center animate-scale-in">
             <div className="flex flex-col items-center gap-4">
               <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center animate-float">
@@ -50,7 +185,7 @@ export default function Bookings() {
             </div>
           </Card>
         ) : (
-          bookings.map((booking: any, index: number) => (
+          filteredBookings.map((booking: any, index: number) => (
             <Card 
               key={booking.id} 
               className="group overflow-hidden card-3d cursor-pointer"
@@ -125,17 +260,25 @@ export default function Bookings() {
                         ${booking.total_amount || 0}
                       </p>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/bookings/${booking.id}`);
-                      }}
-                    >
-                      View Details
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                      <div 
+                        onClick={(e) => e.stopPropagation()}
+                        className="animate-fade-in"
+                      >
+                        <EditBookingDialog bookingId={booking.id} />
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/bookings/${booking.id}`);
+                        }}
+                      >
+                        View Details
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

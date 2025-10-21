@@ -2,10 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AddRoomDialog } from "@/components/AddRoomDialog";
+import { FilterBar } from "@/components/FilterBar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import { Bed } from "lucide-react";
+=======
+import { useState, useMemo } from "react";
+>>>>>>> 2e7e48cff2357045d7214743a12f692a84ebcc2d
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -22,6 +27,17 @@ const getStatusColor = (status: string) => {
 
 export default function Rooms() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    status: "all",
+    type: "all",
+    priceRange: [0, 1000] as [number, number],
+  });
+
   const { data: rooms = [] } = useQuery({
     queryKey: ['rooms'],
     queryFn: async () => {
@@ -34,6 +50,64 @@ export default function Rooms() {
       return data;
     }
   });
+
+  const filteredRooms = useMemo(() => {
+    return rooms.filter((room: any) => {
+      // Search filter
+      if (appliedFilters.search) {
+        const searchLower = appliedFilters.search.toLowerCase();
+        const matchesSearch =
+          room.room_number?.toLowerCase().includes(searchLower) ||
+          room.type?.toLowerCase().includes(searchLower) ||
+          room.floor?.toString().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // Status filter
+      if (appliedFilters.status !== "all" && room.status !== appliedFilters.status) {
+        return false;
+      }
+
+      // Type filter
+      if (appliedFilters.type !== "all" && room.type !== appliedFilters.type) {
+        return false;
+      }
+
+      // Price filter
+      const roomPrice = parseFloat(room.price) || 0;
+      if (roomPrice < appliedFilters.priceRange[0] || roomPrice > appliedFilters.priceRange[1]) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [rooms, appliedFilters]);
+
+  const maxRoomPrice = Math.max(...rooms.map((r: any) => parseFloat(r.price) || 0), 1000);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({
+      search: searchQuery,
+      status: statusFilter,
+      type: typeFilter,
+      priceRange: priceRange,
+    });
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setTypeFilter("all");
+    setPriceRange([0, maxRoomPrice]);
+    setAppliedFilters({
+      search: "",
+      status: "all",
+      type: "all",
+      priceRange: [0, maxRoomPrice],
+    });
+  };
+
+  const uniqueRoomTypes = Array.from(new Set(rooms.map((r: any) => r.type).filter(Boolean)));
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -49,7 +123,43 @@ export default function Rooms() {
         </div>
       </div>
 
+      <FilterBar
+        searchPlaceholder="Search by room number, type, or floor..."
+        onSearchChange={setSearchQuery}
+        filters={[
+          {
+            name: "status",
+            label: "Status",
+            options: [
+              { label: "Available", value: "available" },
+              { label: "Occupied", value: "occupied" },
+              { label: "Maintenance", value: "maintenance" },
+            ],
+            value: statusFilter,
+            onChange: setStatusFilter,
+          },
+          {
+            name: "type",
+            label: "Type",
+            options: uniqueRoomTypes.map((type) => ({
+              label: type,
+              value: type,
+            })),
+            value: typeFilter,
+            onChange: setTypeFilter,
+          },
+        ]}
+        priceRange={priceRange}
+        onPriceRangeChange={setPriceRange}
+        showPriceFilter={true}
+        minPrice={0}
+        maxPrice={maxRoomPrice}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+<<<<<<< HEAD
         {rooms.length === 0 ? (
           <Card className="col-span-full p-12 text-center animate-scale-in">
             <div className="flex flex-col items-center gap-4">
@@ -75,6 +185,16 @@ export default function Rooms() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-all duration-500" />
               
               <CardHeader className="pb-4 relative">
+=======
+        {filteredRooms.length === 0 ? (
+          <div className="col-span-full text-center py-8">
+            <p className="text-muted-foreground">No rooms found. Add your first room!</p>
+          </div>
+        ) : (
+          filteredRooms.map((room: any) => (
+            <Card key={room.id} className="overflow-hidden transition-all hover:shadow-lg" style={{ boxShadow: "var(--shadow-elegant)" }}>
+              <CardHeader className="pb-3">
+>>>>>>> 2e7e48cff2357045d7214743a12f692a84ebcc2d
                 <div className="flex items-start justify-between">
                   <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-300">
                     Room {room.room_number}

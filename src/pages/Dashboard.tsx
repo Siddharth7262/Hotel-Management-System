@@ -1,4 +1,5 @@
 import { StatCard } from "@/components/StatCard";
+import { AboutSection } from "@/components/AboutSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, Bed, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -186,6 +187,11 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* About Section */}
+      <div className="mt-12">
+        <AboutSection />
       </div>
     </div>
   );

@@ -4,12 +4,21 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Phone } from "lucide-react";
 import { AddGuestDialog } from "@/components/AddGuestDialog";
+import { FilterBar } from "@/components/FilterBar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 
 export default function Guests() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: "",
+    status: "all",
+  });
+
   const { data: guests = [] } = useQuery({
     queryKey: ['guests'],
     queryFn: async () => {
@@ -22,6 +31,44 @@ export default function Guests() {
       return data;
     }
   });
+
+  const filteredGuests = useMemo(() => {
+    return guests.filter((guest: any) => {
+      // Search filter
+      if (appliedFilters.search) {
+        const searchLower = appliedFilters.search.toLowerCase();
+        const matchesSearch =
+          guest.name?.toLowerCase().includes(searchLower) ||
+          guest.email?.toLowerCase().includes(searchLower) ||
+          guest.phone?.toLowerCase().includes(searchLower);
+        if (!matchesSearch) return false;
+      }
+
+      // Status filter
+      if (appliedFilters.status !== "all" && guest.status !== appliedFilters.status) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [guests, appliedFilters]);
+
+  const handleApplyFilters = () => {
+    setAppliedFilters({
+      search: searchQuery,
+      status: statusFilter,
+    });
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setAppliedFilters({
+      search: "",
+      status: "all",
+    });
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex items-center justify-between animate-slide-in">
@@ -36,6 +83,7 @@ export default function Guests() {
         </div>
       </div>
 
+<<<<<<< HEAD
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
         {guests.length === 0 ? (
           <Card className="col-span-full p-12 text-center animate-scale-in">
@@ -72,6 +120,42 @@ export default function Guests() {
                 </div>
                 
                 <div className="flex-1 space-y-4">
+=======
+      <FilterBar
+        searchPlaceholder="Search by name, email, or phone..."
+        onSearchChange={setSearchQuery}
+        filters={[
+          {
+            name: "status",
+            label: "Status",
+            options: [
+              { label: "Active", value: "active" },
+              { label: "Inactive", value: "inactive" },
+            ],
+            value: statusFilter,
+            onChange: setStatusFilter,
+          },
+        ]}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {filteredGuests.length === 0 ? (
+          <div className="col-span-full text-center py-8">
+            <p className="text-muted-foreground">No guests found. Add your first guest!</p>
+          </div>
+        ) : (
+          filteredGuests.map((guest: any) => (
+            <Card key={guest.id} className="p-6 transition-all hover:shadow-lg" style={{ boxShadow: "var(--shadow-elegant)" }}>
+              <div className="flex items-start gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-lg font-semibold text-primary-foreground">
+                    {guest.name.split(" ").map((n: string) => n[0]).join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-3">
+>>>>>>> 2e7e48cff2357045d7214743a12f692a84ebcc2d
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors duration-300">{guest.name}</h3>
