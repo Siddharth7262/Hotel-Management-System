@@ -10,6 +10,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
+import { CommandPalette, CommandButton } from "./components/CommandPalette";
+import { RoleGuard } from "./components/RoleGuard";
 
 // Route-based code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -24,6 +26,8 @@ const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const CalendarView = lazy(() => import("./pages/CalendarView"));
+const Staff = lazy(() => import("./pages/Staff"));
+const Housekeeping = lazy(() => import("./pages/Housekeeping"));
 
 const queryClient = new QueryClient();
 
@@ -39,6 +43,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
             <h2 className="text-lg font-semibold tracking-tight">HotelHub</h2>
           </div>
           <div className="flex items-center gap-2">
+            <CommandButton />
             <ThemeToggle />
           </div>
         </div>
@@ -47,6 +52,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
         {children}
       </div>
     </main>
+    {/* Global command palette lives once per app layout */}
+    <CommandPalette />
   </div>
 );
 
@@ -81,7 +88,9 @@ const App = () => (
                 <Route path="/guests" element={<ProtectedRoute><Layout><Guests /></Layout></ProtectedRoute>} />
                 <Route path="/guests/:id" element={<ProtectedRoute><Layout><GuestDetail /></Layout></ProtectedRoute>} />
                 <Route path="/calendar" element={<ProtectedRoute><Layout><CalendarView /></Layout></ProtectedRoute>} />
-                <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><Layout><RoleGuard allow={['admin','manager']}><Analytics /></RoleGuard></Layout></ProtectedRoute>} />
+                <Route path="/staff" element={<ProtectedRoute><Layout><RoleGuard allow={['admin']}><Staff /></RoleGuard></Layout></ProtectedRoute>} />
+                <Route path="/housekeeping" element={<ProtectedRoute><Layout><RoleGuard allow={['housekeeping','manager','admin']}><Housekeeping /></RoleGuard></Layout></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

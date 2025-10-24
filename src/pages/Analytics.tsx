@@ -1,23 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, DollarSign, Users, CalendarCheck, Award, PieChart } from "lucide-react";
+import { TrendingUp, DollarSign, CalendarCheck, Award, PieChart } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart as RechartsPie, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function Analytics() {
-  const { data: bookings = [] } = useQuery({
-    queryKey: ['analytics-bookings'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*, rooms(type, price)')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const { data: rooms = [] } = useQuery({
     queryKey: ['analytics-rooms'],
     queryFn: async () => {
@@ -27,8 +14,32 @@ export default function Analytics() {
     }
   });
 
-  // Calculate metrics
-  const totalRevenue = bookings.reduce((sum: number, b: any) => sum + (parseFloat(b.total_amount) || 0), 0);
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['analytics-bookings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('id, check_in, total_amount, status')
+        .order('check_in', { ascending: true });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ['analytics-payments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('payments')
+        .select('amount, paid_at, status');
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Calculate metrics from payments (paid only)
+  const paidPayments = payments.filter((p: any) => p.status === "paid");
+  const totalRevenue = paidPayments.reduce((sum: number, p: any) => sum + (parseFloat(p.amount) || 0), 0);
   const avgBookingValue = bookings.length > 0 ? totalRevenue / bookings.length : 0;
   const occupancyRate = rooms.length > 0 ? (rooms.filter((r: any) => r.status === 'occupied').length / rooms.length) * 100 : 0;
 
@@ -40,15 +51,30 @@ export default function Analytics() {
   }, {});
   const pieData = Object.entries(roomTypeData).map(([name, value]) => ({ name, value }));
 
-  // Monthly revenue (mock data - replace with actual)
-  const monthlyData = [
-    { month: 'Jan', revenue: 45000, bookings: 28 },
-    { month: 'Feb', revenue: 52000, bookings: 32 },
-    { month: 'Mar', revenue: 48000, bookings: 30 },
-    { month: 'Apr', revenue: 61000, bookings: 38 },
-    { month: 'May', revenue: 58000, bookings: 36 },
-    { month: 'Jun', revenue: 67000, bookings: 42 },
-  ];
+  // Monthly aggregates from payments and bookings
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const monthly = new Map<string, { month: string; revenue: number; bookings: number }>();
+  for (const p of paidPayments) {
+    const d = new Date(p.paid_at);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const label = `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`;
+    const obj = monthly.get(key) ?? { month: label, revenue: 0, bookings: 0 };
+    obj.revenue += Number(p.amount || 0);
+    monthly.set(key, obj);
+  }
+  for (const b of bookings) {
+    const d = new Date(b.check_in);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const label = `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`;
+    const obj = monthly.get(key) ?? { month: label, revenue: 0, bookings: 0 };
+    obj.bookings += 1;
+    monthly.set(key, obj);
+  }
+  const monthlyData = Array.from(monthly.values()).sort((a, b) => {
+    const [am, ay] = a.month.split(" ");
+    const [bm, by] = b.month.split(" ");
+    return (Number("20"+ay) - Number("20"+by)) || (monthNames.indexOf(am) - monthNames.indexOf(bm));
+  });
 
   const COLORS = ['hsl(195, 85%, 35%)', 'hsl(195, 75%, 45%)', 'hsl(40, 85%, 55%)', 'hsl(145, 65%, 45%)'];
 
@@ -68,10 +94,10 @@ export default function Analytics() {
       {/* Key Metrics */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[
-          { title: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, change: "+12.5%", icon: DollarSign, color: "from-green-500 to-emerald-500" },
-          { title: "Avg Booking", value: `$${avgBookingValue.toFixed(0)}`, change: "+8.2%", icon: TrendingUp, color: "from-blue-500 to-cyan-500" },
-          { title: "Occupancy Rate", value: `${occupancyRate.toFixed(1)}%`, change: "+5.1%", icon: CalendarCheck, color: "from-purple-500 to-pink-500" },
-          { title: "Total Bookings", value: bookings.length.toString(), change: "+15.3%", icon: Award, color: "from-orange-500 to-red-500" },
+          { title: "Total Revenue", value: `${totalRevenue.toFixed(2)}`, change: "", icon: DollarSign, color: "from-green-500 to-emerald-500" },
+          { title: "Avg Booking", value: `${avgBookingValue.toFixed(0)}`, change: "", icon: TrendingUp, color: "from-blue-500 to-cyan-500" },
+          { title: "Occupancy Rate", value: `${occupancyRate.toFixed(1)}%`, change: "", icon: CalendarCheck, color: "from-purple-500 to-pink-500" },
+          { title: "Total Bookings", value: bookings.length.toString(), change: "", icon: Award, color: "from-orange-500 to-red-500" },
         ].map((metric, index) => (
           <Card key={index} className="group relative overflow-hidden border-0 backdrop-blur-sm transition-all duration-500 hover:scale-[1.05] animate-scale-in card-modern gradient-border" style={{ boxShadow: "var(--shadow-elegant)", animationDelay: `${index * 0.1}s` }}>
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -84,10 +110,6 @@ export default function Analytics() {
                   <h3 className="text-4xl font-black tracking-tighter bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                     {metric.value}
                   </h3>
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs bg-success/10 text-success border border-success/20 w-fit">
-                    <span className="text-base">↑</span>
-                    {metric.change}
-                  </div>
                 </div>
                 
                 <div className="relative">
