@@ -11,7 +11,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Sun, Moon, Home, Bed, Calendar, Users, Settings, BarChart3, CalendarDays, LogOut, Search } from "lucide-react";
+import { Sun, Moon, Home, Bed, Calendar, Users, Settings, BarChart3, CalendarDays, LogOut, Search, HelpCircle } from "lucide-react";
 import { useTheme } from "next-themes";
 
 type Action = {
@@ -81,6 +81,16 @@ export function CommandPalette() {
       run: () => {
         setTheme(isDark ? "light" : "dark");
         closePalette();
+      },
+    },
+    {
+      id: "open-help",
+      label: "Open Help / Chat",
+      icon: <HelpCircle className="h-4 w-4" />,
+      shortcut: "?",
+      run: () => {
+        closePalette();
+        window.dispatchEvent(new Event("open-help"));
       },
     },
     {
