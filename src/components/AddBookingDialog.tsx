@@ -44,6 +44,18 @@ export function AddBookingDialog() {
     if (roomsData) setRooms(roomsData);
   };
 
+  const hasOverlap = async (roomId: string, checkIn: string, checkOut: string) => {
+    // Find overlapping bookings for the same room (exclude cancelled)
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("id, status, check_in, check_out")
+      .eq("room_id", roomId)
+      .neq("status", "cancelled")
+      .or(`and(check_in.lte.${checkOut},check_out.gte.${checkIn})`);
+    if (error) throw error;
+    return (data ?? []).length > 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -54,7 +66,18 @@ export function AddBookingDialog() {
       const room = rooms.find(r => r.id === selectedRoom);
       
       const days = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24));
-      const totalAmount = room ? room.price * days : 0;
+      const totalAmount = room ? room.price * Math.max(1, days) : 0;
+
+      // Hard availability check
+      const overlap = await hasOverlap(selectedRoom, checkIn, checkOut);
+      if (overlap) {
+        toast({
+          title: "Room not available",
+          description: "The selected room is already booked for the chosen dates.",
+          variant: "destructive",
+        });
+        return;
+      }
       
       // Validate input
       const validatedData = bookingSchema.parse({
@@ -84,6 +107,7 @@ export function AddBookingDialog() {
       
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['recent-bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar-bookings'] });
       setOpen(false);
     } catch (error: any) {
       toast({

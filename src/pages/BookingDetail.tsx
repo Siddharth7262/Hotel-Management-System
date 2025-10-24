@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, User, Bed, DollarSign } from "lucide-react";
+import { AddPaymentDialog } from "@/components/AddPaymentDialog";
+import { AddFeedbackDialog } from "@/components/AddFeedbackDialog";
 
 export default function BookingDetail() {
   const { id } = useParams();
@@ -26,6 +28,34 @@ export default function BookingDetail() {
       if (error) throw error;
       return data;
     }
+  });
+
+  const { data: payments = [] } = useQuery({
+    queryKey: ["booking-payments", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("booking_id", id)
+        .order("paid_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: feedback = [] } = useQuery({
+    queryKey: ["feedback", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("feedback")
+        .select("*")
+        .eq("booking_id", id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
   });
 
   if (isLoading) {
@@ -57,6 +87,10 @@ export default function BookingDetail() {
     (1000 * 60 * 60 * 24)
   );
 
+  const totalPaid = payments
+    .filter((p: any) => p.status === "paid")
+    .reduce((sum: number, p: any) => sum + Number(p.amount || 0), 0);
+
   return (
     <div className="space-y-8">
       <Button variant="ghost" onClick={() => navigate('/bookings')}>
@@ -69,9 +103,12 @@ export default function BookingDetail() {
           <h2 className="text-3xl font-bold text-foreground">Booking Details</h2>
           <p className="text-muted-foreground">Complete booking information</p>
         </div>
-        <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
-          {booking.status}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <AddFeedbackDialog bookingId={booking.id} guestId={booking.guest_id} />
+          <Badge variant={booking.status === "confirmed" ? "default" : "secondary"}>
+            {booking.status}
+          </Badge>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -148,10 +185,11 @@ export default function BookingDetail() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Payment Information</CardTitle>
+            <AddPaymentDialog bookingId={booking.id} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
               <DollarSign className="h-8 w-8 text-primary" />
               <div className="flex-1">
@@ -159,6 +197,59 @@ export default function BookingDetail() {
                 <p className="text-3xl font-bold text-primary">${booking.total_amount || 0}</p>
               </div>
             </div>
+            <div className="rounded-xl border p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Total Paid</div>
+                <div className="text-sm font-bold">${totalPaid.toFixed(2)}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">Balance Due</div>
+                <div className="text-sm font-bold">
+                  ${Math.max(0, Number(booking.total_amount || 0) - totalPaid).toFixed(2)}
+                </div>
+              </div>
+            </div>
+            {payments.length > 0 ? (
+              <div className="space-y-2">
+                <div className="text-sm font-semibold">Payments</div>
+                <div className="space-y-2">
+                  {payments.map((p: any) => (
+                    <div key={p.id} className="flex items-center justify-between rounded-lg border px-3 py-2">
+                      <div className="text-sm">
+                        <div className="font-medium">{p.method.toUpperCase()} — ${Number(p.amount).toFixed(2)}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {p.status} • {new Date(p.paid_at).toLocaleString()}
+                        </div>
+                      </div>
+                      <Badge variant={p.status === "paid" ? "default" : "secondary"}>{p.status}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">No payments recorded yet.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Guest Feedback</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {feedback.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No feedback submitted yet.</div>
+            ) : (
+              <div className="space-y-3">
+                {feedback.map((f: any) => (
+                  <div key={f.id} className="rounded-xl border p-3">
+                    <div className="text-sm font-semibold">Rating: {f.rating}/5</div>
+                    {f.comments ? <div className="text-sm mt-1">{f.comments}</div> : null}
+                    <div className="text-xs text-muted-foreground mt-1">{new Date(f.created_at).toLocaleString()}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
