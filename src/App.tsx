@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { Separator } from "@/components/ui/separator";
+import { CommandPalette, CommandButton } from "./components/CommandPalette";
 
 // Route-based code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -39,6 +40,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
             <h2 className="text-lg font-semibold tracking-tight">HotelHub</h2>
           </div>
           <div className="flex items-center gap-2">
+            <CommandButton />
             <ThemeToggle />
           </div>
         </div>
@@ -47,6 +49,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
         {children}
       </div>
     </main>
+    {/* Global command palette lives once per app layout */}
+    <CommandPalette />
   </div>
 );
 
