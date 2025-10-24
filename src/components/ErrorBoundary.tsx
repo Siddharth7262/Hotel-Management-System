@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { captureException } from "@/integrations/sentry";
 
 type ErrorBoundaryState = { hasError: boolean; error?: Error };
 
@@ -15,10 +16,9 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // In an enterprise app, forward to an observability pipeline here.
-    // For now we keep it simple and visible in console.
     // eslint-disable-next-line no-console
     console.error("Unhandled UI error:", error, info);
+    captureException?.(error);
   }
 
   handleReload = () => {
