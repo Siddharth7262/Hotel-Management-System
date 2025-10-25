@@ -2,6 +2,12 @@
 
 A professional, full-featured hotel management system built with modern web technologies. HotelHub provides an intuitive interface for managing rooms, bookings, guests, and hotel operations with real-time updates and beautiful 3D animations.
 
+## 🎯 **Quick Access**
+- **Live Demo**: `http://localhost:8080/Hotel-Management-System/`
+- **Admin Login**: `admin@hotelhub.com` / `admin123`
+- **Manager Login**: `manager@hotelhub.com` / `manager123`
+- **Staff Login**: `staff@hotelhub.com` / `staff123`
+
 
 ## ✨ Features
 
@@ -114,6 +120,44 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
+## 🔐 **Login Credentials**
+
+The system comes with pre-configured accounts for testing and development:
+
+### **Admin Account (Full Access)**
+- **Email**: `admin@hotelhub.com`
+- **Password**: `admin123`
+- **Role**: `admin`
+- **Access**: Full system access, can manage everything including users, analytics, and all hotel operations
+
+### **Manager Account (Management Access)**
+- **Email**: `manager@hotelhub.com`
+- **Password**: `manager123`
+- **Role**: `manager`
+- **Access**: Analytics, bookings, guests, rooms management (cannot delete users or access staff management)
+
+### **Staff Account (Basic Access)**
+- **Email**: `staff@hotelhub.com`
+- **Password**: `staff123`
+- **Role**: `staff`
+- **Access**: Basic operations, limited access to rooms and basic functionality
+
+### **Additional Test Accounts**
+- **Email**: `mukprabhakar@gmail.com` (Admin role)
+- **Email**: `siddharthhjp1@gmail.com` (Manager role)
+
+### **How to Login**
+1. Navigate to `http://localhost:8080/Hotel-Management-System/auth`
+2. Use any of the credentials above to sign in
+3. Access Analytics page with admin or manager accounts: `http://localhost:8080/Hotel-Management-System/analytics`
+
+### **Role-Based Access Control**
+- **Admin**: Full system access, user management, analytics, all CRUD operations
+- **Manager**: Analytics access, booking/guest/room management, cannot delete users
+- **Receptionist**: Front desk operations, booking management
+- **Housekeeping**: Room maintenance and cleaning status updates
+- **Staff**: Basic access, limited functionality
+
 ## 📁 Project Structure
 
 ```
@@ -166,29 +210,49 @@ hotelhub/
 └── vite.config.ts          # Vite configuration
 ```
 
+## 🚀 Quick Start
+
+### **Ready-to-Use Accounts**
+The system comes with pre-configured accounts. Simply use these credentials to get started immediately:
+
+1. **For Full Access**: Use `admin@hotelhub.com` / `admin123`
+2. **For Management**: Use `manager@hotelhub.com` / `manager123`
+3. **For Basic Access**: Use `staff@hotelhub.com` / `staff123`
+
+### **Quick Test**
+1. Start the development server: `npm run dev`
+2. Navigate to: `http://localhost:8080/Hotel-Management-System/auth`
+3. Sign in with any of the credentials above
+4. Explore the dashboard and analytics
+
 ## 🎯 Usage Guide
 
 ### First Time Setup
 
-1. **Create an Account**
+1. **Use Pre-configured Accounts**
+   - Use the login credentials provided above
+   - No need to create new accounts for testing
+   - All roles and permissions are already configured
+
+2. **Create Additional Accounts (Optional)**
    - Navigate to the login page
    - Click "Sign Up"
    - Enter your email and password
-   - You'll be automatically logged in
+   - You'll be automatically logged in with 'staff' role
 
-2. **Add Rooms**
+3. **Add Rooms**
    - Go to "Rooms" section
    - Click "Add Room"
    - Fill in room details (number, type, price, amenities)
    - Click "Add Room" to save
 
-3. **Add Guests**
+4. **Add Guests**
    - Navigate to "Guests" section
    - Click "Add Guest"
    - Enter guest information
    - Save the guest profile
 
-4. **Create Bookings**
+5. **Create Bookings**
    - Go to "Bookings" section
    - Click "Add Booking"
    - Select guest and room
@@ -351,9 +415,22 @@ All tables have RLS policies ensuring:
 - **Solution**: Delete `node_modules` and run `npm install` again
 
 **Issue**: Database connection error
-- **Solution**: 
+- **Solution**: Check your Supabase environment variables in `.env` file
+
 **Issue**: Authentication not working
 - **Solution**: Clear browser cache and localStorage, then try again
+
+**Issue**: Can't access Analytics page
+- **Solution**: Use admin or manager accounts (`admin@hotelhub.com` or `manager@hotelhub.com`)
+
+**Issue**: Login credentials not working
+- **Solution**: Use the pre-configured accounts:
+  - Admin: `admin@hotelhub.com` / `admin123`
+  - Manager: `manager@hotelhub.com` / `manager123`
+  - Staff: `staff@hotelhub.com` / `staff123`
+
+**Issue**: Blank white page on Analytics
+- **Solution**: This was fixed! The page now shows proper access denied messages if you don't have the right role
 
 **Issue**: Styles not loading
 - **Solution**: Run `npm run build` to rebuild the project
